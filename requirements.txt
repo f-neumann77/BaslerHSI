@@ -2,3 +2,4 @@ numpy
 scipy
 tifffile
 pypylon
+tqdm
