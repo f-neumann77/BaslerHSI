@@ -27,7 +27,7 @@ class HSImage:
         """
         if path_to_norm:
             if path_to_norm.endswith('.mat'):
-                if path_to_norm and key:
+                if key:
                     temp = loadmat(path_to_norm)[key]
                     self.coef = self.coef_norm(temp[:, 5, :])
             if path_to_norm.endswith('.tiff'):
