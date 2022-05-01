@@ -12,7 +12,8 @@ def do_step(camera: Basler, hsi: HSImage, servomotor: Servomotor, **kwargs):
 
 def start_record(number_of_steps: int, exposure: int, direction: str, path_to_mat: str, path_coef=None, key=None):
 
-    camera = Basler(exposure=exposure)
+    camera = Basler()
+    camera.set_camera_configures(exposure=exposure)
     hsi = HSImage()
     hsi.set_coef(path_coef, key)
     servomotor = Servomotor(direction)
