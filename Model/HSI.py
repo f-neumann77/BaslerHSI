@@ -32,7 +32,7 @@ class HSImage:
         hs_layer : np.array
             Layer from hyperspectral image obtained from raw slit
         thresh : int
-            Value to which whole spectrum will be normalize
+            Value to which whole spectrum will be normalized
         """
         coef = []
         for i in range(250):
