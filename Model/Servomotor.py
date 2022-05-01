@@ -2,6 +2,19 @@ import RPi.GPIO as GPIO
 import time
 
 class Servomotor:
+    """
+    Class to work with servomotor by RPi.GPIO
+
+    Attributes
+    ----------
+    direction : int
+        choose direction of rolling
+    mode : int
+        mode of rolling
+    velocity : int
+        count of steps per minute
+
+    """
 
     def __init__(self, direction: int, mode: int, velocity: int):
         self.direction = direction
@@ -17,6 +30,9 @@ class Servomotor:
 
 
     def initialize_pins(self):
+        """
+        Initilizes Raspberry pins
+        """
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin_3_YEL, GPIO.OUT, initial=1)  # step
@@ -42,6 +58,9 @@ class Servomotor:
         GPIO.output(self.pin_14_BLUE, 0)
 
     def next_step(self):
+        """
+        Does one step of servomotor
+        """
         GPIO.output(self.pin_3_YEL, 1)
         time.sleep(0.1)
         GPIO.output(self.pin_3_YEL, 0)
