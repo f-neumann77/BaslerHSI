@@ -6,13 +6,34 @@ from scipy.io import loadmat, savemat
 class HSImage:
     """
     Hyperspectral Image has dimension X - Y - Z where Z - count of channels
+
+    Attributes
+    ----------
+    hsi : np.array
+        Hyperspectral Image in array format
+    coef : np.array
+        Coefficients matrix for normalizing input spectrum if slit has defects
+
+    Methods
+    ---------
+    TODO write all methods
     """
 
     def __init__(self, hsi=None, coef=None):
         self.hsi = hsi
         self.coef = coef
 
-    def coef_norm(self, hs_layer: np.array, thresh=100) -> np.array:
+    def _coef_norm(self, hs_layer: np.array, thresh=100) -> np.array:
+        """
+        This method calculates matrix of normalize coefficients from spectrum layer obtained from slit
+
+        Parameters
+        ----------
+        hs_layer : np.array
+            Layer from hyperspectral image obtained from raw slit
+        thresh : int
+            Value to which whole spectrum will be normalize
+        """
         coef = []
         for i in range(250):
             coef.append([x / thresh for x in hs_layer[:, i]])
@@ -22,17 +43,21 @@ class HSImage:
         """
         This method set coefficients for normalize HSI from file with .mat or .tiff extension
 
-        path_to_norm - path to file with raw spectrum obtained from slit
-        key - key from .mat file
+        Parameters
+        ----------
+        path_to_norm : str
+            path to file with raw spectrum obtained from slit
+        key : str
+            key from .mat file
         """
         if path_to_norm:
             if path_to_norm.endswith('.mat'):
                 if key:
                     temp = loadmat(path_to_norm)[key]
-                    self.coef = self.coef_norm(temp[:, 5, :])
+                    self.coef = self._coef_norm(temp[:, 5, :])
             if path_to_norm.endswith('.tiff'):
                 temp = tiff.imread(path_to_norm)
-                self.coef = self.coef_norm(temp[:, 5, :])
+                self.coef = self._coef_norm(temp[:, 5, :])
 
 
     def _crop_layer(self, layer: np.array,
@@ -43,11 +68,20 @@ class HSImage:
                     right_bound_spectrum=1390
                     ) -> np.array:
         """
-        This method crops layer to target area which contain spectrum
-        gap_coord - int, it means coordinate of line from difraction slit
-        range_to_spec - int, range from difraction slit line to area of spectrum
-        range_to_end_spectrum - int, width of spectrum line
-        left_bound_spectrum and right_bound spectrum - bounderies of where is spectrum
+        This method crops layer to target area which contain spectrum and return it
+
+        Parameters
+        ----------
+        layer : np.array
+            layer of HSI
+        gap_coord : int
+            it means coordinate of line from diffraction slit
+        range_to_spectrum : int
+            range from diffraction slit line to area of spectrum
+        range_to_end_spectrum : int
+            width of spectrum line
+        left_bound_spectrum and right_bound spectrum : int
+            boundaries of where is spectrum
         """
         x1 = gap_coord + range_to_spectrum
         x2 = x1 + range_to_end_spectrum
@@ -58,28 +92,59 @@ class HSImage:
                                   ) -> np.array:
         """
         This method normalizes layer with not uniform light
-        layer - np.array, layer of HSI
-        coef - np.array, array of coefficients for uniform light
+
+        Parameters
+        ----------
+        layer : np.array
+            layer of HSI
+        coef : np.array
+            array of coefficients for uniform light
         """
         return layer / coef if coef else layer
 
-    def add_layer_yz_fast(self, layer: np.array, i: int, count_images: int):
-        # TODO replace to separate function?
+    def _prepare_layer(self, layer: np.array) -> np.array:
+        """
+        This method crops and normalize input layer of spectrum and return it
+
+        Parameters
+        ----------
+        layer : np.array
+            layer of HSI
+        """
         layer = self._crop_layer(layer)
         layer = self._normalize_spectrum_layer(layer, self.coef)
+        return layer
 
-        x, y, z = count_images, *(layer.shape)
+    def add_layer_yz_fast(self, layer: np.array, i: int, count_images: int):
+        """
+        This method add layer for X-coordinate with preallocated memory to hyperspectral image
 
+        Parameters
+        ----------
+        layer : np.array
+            layer of HSI
+        i : int
+            index of current layer
+        count_images : int
+            length HSI by X-coordinate (count of layers)
+        """
+        layer = self._prepare_layer(layer)
         if (self.hsi is None):
+            x, y, z = count_images, *(layer.shape)
             self.hsi = np.zeros((x, y, z))
         # TODO squeeze
         self.hsi[i, :, :] = layer[None, :, :]
 
     def add_layer_yz(self, layer: np.array):
-        # TODO replace to separate function?
-        layer = self._crop_layer(layer)
-        layer = self._normalize_spectrum_layer(layer, self.coef)
+        """
+        This method add layer for X-coordinate
 
+        Parameters
+        ----------
+        layer : np.array
+            layer of HSI
+        """
+        layer = self._prepare_layer(layer)
         if (self.hsi is None):
             self.hsi = layer
         elif (len(np.shape(self.hsi)) < 3):
@@ -103,8 +168,13 @@ class HSImage:
     def hyp_to_mult(self, number_of_channels: int) -> np.array:
         """
         Convert hyperspectral image to multispectral
-        HSI - np.array of hyperspectral image with shape X - Y - Number of channel
-        number_of_channels - number of channels of multyspectral image
+
+        Parameters
+        ----------
+        HSI : np.array
+            Array of hyperspectral image with shape X - Y - Number of channel
+        number_of_channels : int
+            number of channels of multi-spectral image
         """
 
         if (number_of_channels > np.shape(self.hsi)[2]):
