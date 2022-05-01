@@ -1,53 +1,48 @@
+import RPi.GPIO as GPIO
+import time
 
 class Servomotor:
-    """
 
-    NAME = str(self.ui.textEdit_6.toPlainText())
-    dan = int(self.ui.textEdit.toPlainText())  # Kolichestvo shagov
-    dan_2 = int(self.ui.textEdit_2.toPlainText())  # Napravlenie
-    N = int(self.ui.textEdit_11.toPlainText())  # Rezim
-    skor_ = float(self.ui.textEdit_12.toPlainText())  # Скорость(кол-во шагов в минуту)
-
-    Exp_ = float(self.ui.textEdit_5.toPlainText())  # ZADAEM ExporsureTime
-    k = dan
-
-    pauza_ = 60.0 / skor_
-
-    x = 1  # NOMER FOTO
-    j = 1  # schetchik foto
-    i = 0  # schetchik shagov
-
-    pin_3_YEL = 3  # STEP
-    pin_14_BLUE = 14  # STRAHOVKA (ENA)
-    pin_4_GREY = 4  # NAPRAVLENIE (DIR)
-    pin_17_MS1 = 17  # №6 после земли ближе к процу
-    pin_18_MS2 = 18  # REJIM oborota    №6 на 1 дальше чем предыдущи
-    GPIO.setmode(GPIO.BCM)  # ZADALI NOMERATIY PINOV
-
-    GPIO.setup(pin_3_YEL, GPIO.OUT, initial=1)  # step
-    GPIO.setup(pin_14_BLUE, GPIO.OUT, initial=1)  # strahowka (ENA)
-    GPIO.setup(pin_4_GREY, GPIO.OUT, initial=1)  # napravlenie step (DIR)
-    GPIO.setup(pin_17_MS1, GPIO.OUT, initial=0)
-    GPIO.setup(pin_18_MS2, GPIO.OUT, initial=0)
-
-    if N == 1:
-        GPIO.output(pin_17_MS1, 0)
-        GPIO.output(pin_18_MS2, 0)
-    elif N == 2:
-        GPIO.output(pin_17_MS1, 1)
-        GPIO.output(pin_18_MS2, 0)
-    elif N == 4:
-        GPIO.output(pin_17_MS1, 0)
-        GPIO.output(pin_18_MS2, 1)
-    else:
-        GPIO.output(pin_17_MS1, 1)
-        GPIO.output(pin_18_MS2, 1)
-
-    GPIO.output(pin_4_GREY, dan_2)  # zadaem rejim raboti pinov  dan_2
-    GPIO.output(pin_14_BLUE, 0)  #
-    """
-
-    def __init__(self, mode: str):
+    def __init__(self, direction: int, mode: int, velocity: int):
+        self.direction = direction
         self.mode = mode
+        self.velocity = velocity  # steps per minute
+
+        self.sleep_time_for_signal = 0.1
+        self.pin_3_YEL = 3  # step
+        self.pin_14_BLUE = 14  # (ENA)
+        self.pin_4_GREY = 4  # direction (DIR)
+        self.pin_17_MS1 = 17  # №6
+        self.pin_18_MS2 = 18  # mode
+
+
+    def initialize_pins(self):
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.pin_3_YEL, GPIO.OUT, initial=1)  # step
+        GPIO.setup(self.pin_14_BLUE, GPIO.OUT, initial=1)  # (ENA)
+        GPIO.setup(self.pin_4_GREY, GPIO.OUT, initial=1)  # (DIR)
+        GPIO.setup(self.pin_17_MS1, GPIO.OUT, initial=0)
+        GPIO.setup(self.pin_18_MS2, GPIO.OUT, initial=0)
+
+        if self.mode == 1:
+            GPIO.output(self.pin_17_MS1, 0)
+            GPIO.output(self.pin_18_MS2, 0)
+        elif self.mode == 2:
+            GPIO.output(self.pin_17_MS1, 1)
+            GPIO.output(self.pin_18_MS2, 0)
+        elif self.mode == 4:
+            GPIO.output(self.pin_17_MS1, 0)
+            GPIO.output(self.pin_18_MS2, 1)
+        else:
+            GPIO.output(self.pin_17_MS1, 1)
+            GPIO.output(self.pin_18_MS2, 1)
+
+        GPIO.output(self.pin_4_GREY, self.direction)
+        GPIO.output(self.pin_14_BLUE, 0)
+
     def next_step(self):
-        pass
+        GPIO.output(self.pin_3_YEL, 1)
+        time.sleep(0.1)
+        GPIO.output(self.pin_3_YEL, 0)
+        time.sleep(0.1)

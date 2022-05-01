@@ -10,13 +10,17 @@ def do_step(camera: Basler, hsi: HSImage, servomotor: Servomotor, **kwargs):
     hsi.add_layer_yz_fast(layer.astype('uint16'), ind, num)
     servomotor.next_step()
 
-def start_record(number_of_steps: int, exposure: int, direction: str, path_to_mat: str, path_coef=None, key=None):
+def start_record(number_of_steps: int, exposure: int, direction: int, path_to_mat: str, path_coef=None, key=None):
+
+    mode = 0
+    velocity = 100
 
     camera = Basler()
     camera.set_camera_configures(exposure=exposure)
     hsi = HSImage()
     hsi.set_coef(path_coef, key)
-    servomotor = Servomotor(direction)
+    servomotor = Servomotor(direction, mode=mode, velocity=velocity)
+    servomotor.initialize_pins()
 
     for i in range(number_of_steps):
        do_step(camera, hsi, servomotor, ind=i, num=number_of_steps)
@@ -27,7 +31,7 @@ if __name__ == '__main__':
 
     NUMBER_OF_STEPS: int = 100
     EXPOSURE: int = 1_000_000
-    DIRECTION: str = 'left'
+    DIRECTION: int = 0
     PATH_TO_MAT: str = './cube.mat'
     PATH_TO_COEF: str = './lampa.tiff'
 
