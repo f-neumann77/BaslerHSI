@@ -104,7 +104,7 @@ class HSImage:
 
     def _prepare_layer(self, layer: np.array) -> np.array:
         """
-        This method crops and normalize input layer of spectrum and return it
+        This method crops and normalizes input layer of spectrum and return it
 
         Parameters
         ----------
@@ -117,7 +117,7 @@ class HSImage:
 
     def add_layer_yz_fast(self, layer: np.array, i: int, count_images: int):
         """
-        This method add layer for X-coordinate with preallocated memory to hyperspectral image
+        This method adds layer for X-coordinate with preallocated memory to hyperspectral image
 
         Parameters
         ----------
@@ -137,7 +137,7 @@ class HSImage:
 
     def add_layer_yz(self, layer: np.array):
         """
-        This method add layer for X-coordinate
+        This method adds layer for X-coordinate
 
         Parameters
         ----------
@@ -153,6 +153,14 @@ class HSImage:
             self.hsi = np.append(self.hsi, layer[None, :, :], axis=0)
 
     def add_layer_xy(self, layer: np.array):
+        """
+        This method adds layer as image to HSI for Z-coordinate
+
+        Parameters
+        ----------
+        layer : np.array
+            layer of HSI as image
+        """
         if (self.hsi is None):
             self.hsi = layer
         elif (len(np.shape(self.hsi)) < 3):
@@ -162,24 +170,28 @@ class HSImage:
 
     # TODO make
     def rgb(self, channels=(80, 70, 20)) -> np.array:
+        """
+        This method transforms hyperspectral image to RGB image
+
+        Parameters
+        ----------
+        channels : tuple[red: int, green: int, blue: int]
+            Tuple of numbers of channels accorded to wavelengths of red, green and blue colors
+        """
         r, g, b = channels
         return np.stack((self.hsi[:, :, r], self.hsi[:, :, g], self.hsi[:, :, b]), axis=2)
 
     def hyp_to_mult(self, number_of_channels: int) -> np.array:
         """
-        Convert hyperspectral image to multispectral
+        Converts hyperspectral image to multispectral and return it
 
         Parameters
         ----------
-        HSI : np.array
-            Array of hyperspectral image with shape X - Y - Number of channel
         number_of_channels : int
             number of channels of multi-spectral image
         """
-
         if (number_of_channels > np.shape(self.hsi)[2]):
             raise ValueError('Number of MSI is over then HSI')
-
         MSI = np.zeros((np.shape(self.hsi)[0], np.shape(self.hsi)[1], number_of_channels))
         l = [int(x * (250 / number_of_channels)) for x in range(0, number_of_channels)]
         for k, i in enumerate(l):
@@ -188,22 +200,69 @@ class HSImage:
         return MSI
 
     def get_hsi(self) -> np.array:
+        """
+        return current hyperspectral image as array
+        """
         return self.hsi
 
     def get_channel(self, number_of_channel: int) -> np.array:
+        """
+        return channel of hyperspectral image
+
+        Parameters
+        ----------
+        number_of_channel : int
+            number of channel of hyperspectral image
+        """
         return self.hsi[:, :, number_of_channel]
 
     def load_from_array(self, hsi: np.array):
+        """
+        Initializes hyperspectral image from numpy array
+
+        Parameters
+        ----------
+        hsi : np.array
+            hyperspectral image as array
+        """
         self.hsi = hsi
 
     def load_from_mat(self, path_to_file: str, key: str):
+        """
+        Initializes hyperspectral image from mat file
+
+        Parameters
+        ----------
+        path_to_file : str
+            path to mat file with HSI
+        key : str
+            key for dictionary in mat file
+        """
         self.hsi = loadmat(path_to_file)[key]
 
     def save_to_mat(self, path_to_file: str, key: str):
+        """
+        Saves hyperspectral image to mat file
+
+        Parameters
+        ----------
+        path_to_file : str
+            path to mat file with HSI
+        key : str
+            key for dictionary in mat file
+        """
         # TODO Check values in raw images
         savemat(path_to_file, {key: self.hsi.astype('int16')})
 
     def load_from_tiff(self, path_to_file: str):
+        """
+        Initializes hyperspectral image from tiff file
+
+        Parameters
+        ----------
+        path_to_file : str
+            path to tiff file with HSI
+        """
         self.hsi = tiff.imread(path_to_file)
 
     def save_to_tiff(self, path_to_file):
