@@ -17,6 +17,14 @@ class Basler:
         self.camera.Open()
 
     def set_camera_configures(self, exposure: int):
+        """
+        sets camera configures
+
+        Parameters
+        ----------
+        exposure : int
+            time of exposure in milliseconds
+        """
         self.camera.ExposureTime.SetValue(exposure)
 
     def make_shot(self) -> np.array:
