@@ -39,7 +39,7 @@ class HSImage:
             coef.append([x / thresh for x in hs_layer[:, i]])
         return np.array(coef).T
 
-    def set_coef(self, path_to_norm: str, key: str):
+    def set_coef(self, path_to_norm: str=None, key: str=None):
         """
         This method set coefficients for normalize HSI from file with .mat or .tiff extension
 
@@ -86,6 +86,7 @@ class HSImage:
         x1 = gap_coord + range_to_spectrum
         x2 = x1 + range_to_end_spectrum
         return layer[x1: x2, left_bound_spectrum: right_bound_spectrum].T
+
 
     def _normalize_spectrum_layer(self, layer: np.array,
                                   coef=None,
