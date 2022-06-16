@@ -1,7 +1,8 @@
 from Model.Camera import Basler
 from Model.HSI import HSImage
 from Model.Servomotor import Servomotor
-
+from tqdm import tqdm
+import configparser
 
 def do_step(camera: Basler, hsi: HSImage, servomotor: Servomotor, **kwargs):
     """
@@ -27,13 +28,13 @@ def do_step(camera: Basler, hsi: HSImage, servomotor: Servomotor, **kwargs):
     hsi.add_layer_yz_fast(layer.astype('uint16'), ind, num)
     servomotor.next_step()
 
-def start_record(count_of_steps: int, exposure: int, direction: int, path_to_mat: str, path_coef=None, key=None):
+def start_record(number_of_steps: int, exposure: int, direction: int, path_to_mat: str, path_to_coef=None, key_coef=None):
     """
     Starts recording of hyperspectral image
 
     Parameters
     ----------
-    count_of_steps : int
+    number_of_steps : int
         count of layers (images) of hyperspectral image which will shouted
     exposure : int
         time of exposure in milliseconds
@@ -52,25 +53,22 @@ def start_record(count_of_steps: int, exposure: int, direction: int, path_to_mat
     camera = Basler()
     camera.set_camera_configures(exposure=exposure)
     hsi = HSImage()
-    hsi.set_coef(path_coef, key)
+    hsi.set_coef(path_to_coef, key_coef)
     servomotor = Servomotor(direction, mode=mode, velocity=velocity)
     servomotor.initialize_pins()
 
-    for i in range(count_of_steps):
-       do_step(camera, hsi, servomotor, ind=i, num=count_of_steps)
+    for i in tqdm(range(number_of_steps)):
+       do_step(camera, hsi, servomotor, ind=i, num=number_of_steps)
 
     hsi.save_to_mat(path_to_file=path_to_mat, key='image')
 
 if __name__ == '__main__':
 
-    NUMBER_OF_STEPS: int = 100
-    EXPOSURE: int = 1_000_000
-    DIRECTION: int = 0
-    PATH_TO_MAT: str = './cube.mat'
-    PATH_TO_COEF: str = './lampa.tiff'
-
-    start_record(number_of_steps=NUMBER_OF_STEPS,
-                 exposure=EXPOSURE,
-                 direction=DIRECTION,
-                 path_to_mat=PATH_TO_MAT)
+    conf = configparser.ConfigParser()
+    conf.read("configuration.ini")
+    start_record(number_of_steps=int(conf['Basler']['NUMBER_OF_STEPS']),
+                 exposure=int(conf['Basler']['EXPOSURE']),
+                 direction=int(conf['Basler']['DIRECTION']),
+                 path_to_mat=conf['Paths']['PATH_TO_MAT'],
+                 path_to_coef=conf['Paths']['PATH_TO_COEF'])
 
