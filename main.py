@@ -13,16 +13,16 @@ def do_step(camera: Basler,
 
     Parameters
     ----------
-    camera : Basler
+    camera: Basler
         instance of Basler camera
-    hsi : HSImage
+    hsi: HSImage
         hyperspectral image
     servomotor : Servomotor
         instance of servomotor
     **kwargs concludes
-        ind : int
+        ind: int
             number of channel of HSI
-        num : int
+        num: int
             count of layers (in X-coordinate) in HSI
     """
     ind = kwargs['ind']
@@ -64,21 +64,21 @@ def start_record(number_of_steps: int,
 
     Parameters
     ----------
-    number_of_steps : int
+    number_of_steps: int
         count of layers (images) of hyperspectral image which will shouted
-    exposure : int
+    exposure: int
         time of exposure in milliseconds
     mode: int
         mode for servomotor
     velocity: int
         velocity of servomotor
-    direction : int
+    direction: int
         get 1 or 0 values
-    path_to_save : str
+    path_to_save: str
         path to mat file in which hyperspepctral image will be saved
-    path_to_coef : str
+    path_to_coef: str
         path to file with matrix of normalized coefficients
-    key_coef : str
+    key_coef: str
         key for mat file of matrix of normalized coefficients
     """
     print('Start recording...')
