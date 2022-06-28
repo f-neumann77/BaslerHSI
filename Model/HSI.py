@@ -104,17 +104,19 @@ class HSImage:
         """
         if path_to_norm:
             print(f'Hyperspectral image will be normalized with {path_to_norm}')
-            if path_to_norm.endswith('.mat'):
-                if key:
-                    temp = loadmat(path_to_norm)[key]
-                    self.coef = self._coef_norm(temp[:, 5, :])
-                    print(f'Normalizing was successful with {path_to_norm}')
-            if path_to_norm.endswith('.tiff'):
+            if path_to_norm.endswith('.mat') and key:
+                temp = loadmat(path_to_norm)[key]
+                self.coef = self._coef_norm(temp[:, 5, :])
+                print(f'Normalizing was successful with {path_to_norm}')
+            elif path_to_norm.endswith('.tiff'):
                 temp = tiff.imread(path_to_norm)
                 self.coef = self._coef_norm(temp[:, 5, :])
                 print(f'Normalizing was successful with {path_to_norm}')
-            if path_to_norm.endswith('.npy'):
+            elif path_to_norm.endswith('.npy'):
                 self.coef = self._coef_norm(np.load(path_to_norm)[:, 5, :])
+                print(f'Normalizing was successful with {path_to_norm}')
+            else:
+                raise "Error of loading coefficients"
 
 
     def _crop_layer(self, layer: np.array) -> np.array:
