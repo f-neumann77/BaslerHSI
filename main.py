@@ -4,7 +4,10 @@ from Model.Servomotor import Servomotor
 from tqdm import tqdm
 import configparser
 
-def do_step(camera: Basler, hsi: HSImage, servomotor: Servomotor, **kwargs):
+def do_step(camera: Basler,
+            hsi: HSImage,
+            servomotor: Servomotor,
+            **kwargs):
     """
     Does one step of system concluded shot, adding to hypercube this shot and step of servomotor
 
@@ -28,7 +31,35 @@ def do_step(camera: Basler, hsi: HSImage, servomotor: Servomotor, **kwargs):
     hsi.add_layer_yz_fast(layer.astype('uint16'), ind, num)
     servomotor.next_step()
 
-def start_record(number_of_steps: int, exposure: int, direction: int, path_to_mat: str, path_to_coef=None, key_coef=None):
+def save_hsi(hsi: HSImage,
+             path_to_save: str):
+    """
+    Saves hypespectral image in different formats
+
+    Parameters
+    ----------
+    hsi: HSImage
+        hyperspectral image
+    path_to_save: str
+        path to saving HSI in format ends with .tiff, .mat, .npy
+    """
+    if path_to_save.endswith('.mat'):
+        hsi.save_to_mat(path_to_file=path_to_save, key='image')
+    elif path_to_save.endswith('.mat'):
+        hsi.save_to_tiff(path_to_file=path_to_save)
+    elif path_to_save.endswith('.npy'):
+        hsi.save_to_npy(path_to_file=path_to_save)
+    else:
+        raise "Saving error: please check file format"
+
+def start_record(number_of_steps: int,
+                 exposure: int,
+                 mode: int,
+                 velocity: int,
+                 direction: int,
+                 path_to_save: str,
+                 path_to_coef=None,
+                 key_coef=None):
     """
     Starts recording of hyperspectral image
 
@@ -38,17 +69,19 @@ def start_record(number_of_steps: int, exposure: int, direction: int, path_to_ma
         count of layers (images) of hyperspectral image which will shouted
     exposure : int
         time of exposure in milliseconds
+    mode: int
+        mode for servomotor
+    velocity: int
+        velocity of servomotor
     direction : int
         get 1 or 0 values
-    path_to_mat : str
+    path_to_save : str
         path to mat file in which hyperspepctral image will be saved
-    path_coef : str
+    path_to_coef : str
         path to file with matrix of normalized coefficients
-    key : str
+    key_coef : str
         key for mat file of matrix of normalized coefficients
     """
-    mode = 0
-    velocity = 100
 
     camera = Basler()
     camera.set_camera_configures(exposure=exposure)
@@ -60,7 +93,8 @@ def start_record(number_of_steps: int, exposure: int, direction: int, path_to_ma
     for i in tqdm(range(number_of_steps)):
        do_step(camera, hsi, servomotor, ind=i, num=number_of_steps)
 
-    hsi.save_to_mat(path_to_file=path_to_mat, key='image')
+    save_hsi(hsi, path_to_save=path_to_save)
+    print(f'Hyperspectral image was saved in {path_to_save}')
 
 if __name__ == '__main__':
 
@@ -68,7 +102,9 @@ if __name__ == '__main__':
     conf.read("configuration.ini")
     start_record(number_of_steps=int(conf['Basler']['NUMBER_OF_STEPS']),
                  exposure=int(conf['Basler']['EXPOSURE']),
+                 mode=int(conf['Servomotor']['MODE']),
+                 velocity=int(conf['Servomotor']['VELOCITY']),
                  direction=int(conf['Basler']['DIRECTION']),
-                 path_to_mat=conf['Paths']['PATH_TO_MAT'],
+                 path_to_save=conf['Paths']['PATH_TO_SAVE'],
                  path_to_coef=conf['Paths']['PATH_TO_COEF'])
 
