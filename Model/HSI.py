@@ -133,7 +133,8 @@ class HSImage:
         return layer[x1: x2, self.left_bound_spectrum: self.right_bound_spectrum].T
 
 
-    def _normalize_spectrum_layer(self, layer: np.array,
+    def _normalize_spectrum_layer(self,
+                                  layer: np.array,
                                   coef=None) -> np.array:
         """
         This method normalizes layer with not uniform light
@@ -317,7 +318,7 @@ class HSImage:
         """
         self.hsi = tiff.imread(path_to_file)
 
-    def save_to_tiff(self, path_to_file):
+    def save_to_tiff(self, path_to_file: str):
         tiff.imwrite(path_to_file, self.hsi)
 
     def load_from_npy(self, path_to_file: str):
