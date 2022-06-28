@@ -45,7 +45,7 @@ def save_hsi(hsi: HSImage,
     """
     if path_to_save.endswith('.mat'):
         hsi.save_to_mat(path_to_file=path_to_save, key='image')
-    elif path_to_save.endswith('.mat'):
+    elif path_to_save.endswith('.tiff'):
         hsi.save_to_tiff(path_to_file=path_to_save)
     elif path_to_save.endswith('.npy'):
         hsi.save_to_npy(path_to_file=path_to_save)
