@@ -9,8 +9,12 @@ class Servomotor:
     ----------
     direction : int
         choose direction of rolling
+        0 - left
+        1 - right
     mode : int
         mode of rolling
+        0 - full step
+        1 - half step
 
     """
 
@@ -38,18 +42,16 @@ class Servomotor:
         GPIO.setup(self.pin_17_MS1, GPIO.OUT, initial=0)
         GPIO.setup(self.pin_18_MS2, GPIO.OUT, initial=0)
 
-        if self.mode == 1:
+        # Full step
+        if self.mode == 0:
             GPIO.output(self.pin_17_MS1, 0)
             GPIO.output(self.pin_18_MS2, 0)
-        elif self.mode == 2:
+        # Half step
+        elif self.mode == 1:
             GPIO.output(self.pin_17_MS1, 1)
             GPIO.output(self.pin_18_MS2, 0)
-        elif self.mode == 4:
-            GPIO.output(self.pin_17_MS1, 0)
-            GPIO.output(self.pin_18_MS2, 1)
         else:
-            GPIO.output(self.pin_17_MS1, 1)
-            GPIO.output(self.pin_18_MS2, 1)
+            raise 'Error with servomotor mode'
 
         GPIO.output(self.pin_4_GREY, self.direction)
         GPIO.output(self.pin_14_BLUE, 0)
