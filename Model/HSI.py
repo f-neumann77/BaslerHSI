@@ -20,7 +20,6 @@ class HSImage:
     TODO write all methods
     """
 
-
     def __init__(self,
                  hsi=None,
                  coef=None):
