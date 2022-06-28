@@ -81,19 +81,37 @@ def start_record(number_of_steps: int,
     key_coef : str
         key for mat file of matrix of normalized coefficients
     """
+    print('Start recording...')
 
-    camera = Basler()
-    camera.set_camera_configures(exposure=exposure)
+    try:
+        camera = Basler()
+        camera.set_camera_configures(exposure=exposure)
+        print('Camera initializing successfully')
+    except:
+        raise "Error camera initializing"
+
     hsi = HSImage()
-    hsi.set_coef(path_to_coef, key_coef)
-    servomotor = Servomotor(direction, mode=mode)
-    servomotor.initialize_pins()
+    if path_to_coef:
+        hsi.set_coef(path_to_coef, key_coef)
+        print('Normalize HSI enabled')
+    else:
+        print('Normalize HSI disabled')
+
+    try:
+        servomotor = Servomotor(direction, mode=mode)
+        servomotor.initialize_pins()
+        print('Servomotor connects successfully')
+    except:
+        raise "Error with servomotor connections"
 
     for i in tqdm(range(number_of_steps)):
        do_step(camera, hsi, servomotor, ind=i, num=number_of_steps)
 
-    save_hsi(hsi, path_to_save=path_to_save)
-    print(f'Hyperspectral image was saved in {path_to_save}')
+    try:
+        save_hsi(hsi, path_to_save=path_to_save)
+        print(f'Hyperspectral image was saved in {path_to_save}')
+    except:
+        raise "Error with  saving HSI"
 
 if __name__ == '__main__':
 
