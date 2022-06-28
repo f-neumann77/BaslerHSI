@@ -11,15 +11,12 @@ class Servomotor:
         choose direction of rolling
     mode : int
         mode of rolling
-    velocity : int
-        count of steps per minute
 
     """
 
-    def __init__(self, direction: int, mode: int, velocity: int):
+    def __init__(self, direction: int, mode: int):
         self.direction = direction
         self.mode = mode
-        self.velocity = velocity  # steps per minute
 
         self.sleep_time_for_signal = 0.1
         self.pin_3_YEL = 3  # step

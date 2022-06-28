@@ -55,7 +55,6 @@ def save_hsi(hsi: HSImage,
 def start_record(number_of_steps: int,
                  exposure: int,
                  mode: int,
-                 velocity: int,
                  direction: int,
                  path_to_save: str,
                  path_to_coef=None,
@@ -87,7 +86,7 @@ def start_record(number_of_steps: int,
     camera.set_camera_configures(exposure=exposure)
     hsi = HSImage()
     hsi.set_coef(path_to_coef, key_coef)
-    servomotor = Servomotor(direction, mode=mode, velocity=velocity)
+    servomotor = Servomotor(direction, mode=mode)
     servomotor.initialize_pins()
 
     for i in tqdm(range(number_of_steps)):
@@ -103,8 +102,9 @@ if __name__ == '__main__':
     start_record(number_of_steps=int(conf['Basler']['NUMBER_OF_STEPS']),
                  exposure=int(conf['Basler']['EXPOSURE']),
                  mode=int(conf['Servomotor']['MODE']),
-                 velocity=int(conf['Servomotor']['VELOCITY']),
                  direction=int(conf['Basler']['DIRECTION']),
                  path_to_save=conf['Paths']['PATH_TO_SAVE'],
                  path_to_coef=conf['Paths']['PATH_TO_COEF'])
+
+
 

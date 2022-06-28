@@ -34,6 +34,16 @@ class HSImage:
 
         Constants
         ---------
+        number_of_channels: int
+            number of channels in hyperspectral image
+
+        red_channel: int
+            number of red channel in hyperspectral image for color reconstruction
+        green_channel: int
+            number of green channel in hyperspectral image for color reconstruction
+        blue_channel: int
+            number of red channel in hyperspectral image for color reconstruction
+
         gap_coord : int
             it means coordinate of line from diffraction slit
         range_to_spectrum : int
@@ -49,6 +59,12 @@ class HSImage:
         # initializes constants for cropping hyperspectral area in raw images
         conf = configparser.ConfigParser()
         conf.read('../configuration.ini')
+
+        self.number_of_channels = int(conf['HSI']['NUMBER_OF_CHANNELS'])
+
+        self.red_channel = int(conf['HSI']['RED_CHANNEL'])
+        self.green_channel = int(conf['HSI']['GREEN_CHANNEL'])
+        self.blue_channel = int(conf['HSI']['BLUE_CHANNEL'])
 
         self.gap_coord = int(conf['HSI']['GAP_COORD'])
         self.range_to_spectrum = int(conf['HSI']['RANGE_TO_SPECTRUM'])
@@ -70,7 +86,7 @@ class HSImage:
             Value to which whole spectrum will be normalized
         """
         coef = []
-        for i in range(250):
+        for i in range(self.number_of_channels):
             coef.append([x / thresh for x in hs_layer[:, i]])
         return np.array(coef).T
 
@@ -200,7 +216,7 @@ class HSImage:
             self.hsi = np.append(self.hsi, layer[:, :, None], axis=2)
 
     # TODO make
-    def rgb(self, channels=(80, 70, 20)) -> np.array:
+    def rgb(self) -> np.array:
         """
         This method transforms hyperspectral image to RGB image
 
@@ -209,7 +225,7 @@ class HSImage:
         channels : tuple[red: int, green: int, blue: int]
             Tuple of numbers of channels accorded to wavelengths of red, green and blue colors
         """
-        r, g, b = channels
+        r, g, b = self.red_channel, self.green_channel, self.blue_channel
         return np.stack((self.hsi[:, :, r], self.hsi[:, :, g], self.hsi[:, :, b]), axis=2)
 
     def hyp_to_mult(self, number_of_channels: int) -> np.array:
@@ -224,7 +240,7 @@ class HSImage:
         if (number_of_channels > np.shape(self.hsi)[2]):
             raise ValueError('Number of MSI is over then HSI')
         MSI = np.zeros((np.shape(self.hsi)[0], np.shape(self.hsi)[1], number_of_channels))
-        l = [int(x * (250 / number_of_channels)) for x in range(0, number_of_channels)]
+        l = [int(x * (self.number_of_channels / number_of_channels)) for x in range(0, number_of_channels)]
         for k, i in enumerate(l):
             MSI[:, :, k] = self.hsi[:, :, i]
 
