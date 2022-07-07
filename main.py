@@ -77,7 +77,7 @@ def start_record(number_of_steps: int,
     path_to_save: str
         path to mat file in which hyperspepctral image will be saved
     path_to_coef: str
-        path to file with matrix of normalized coefficients
+        path to file with raw spectrum obtained from slit
     key_coef: str
         key for mat file of matrix of normalized coefficients
     """
@@ -92,7 +92,7 @@ def start_record(number_of_steps: int,
 
     hsi = HSImage()
     if path_to_coef:
-        hsi.set_coef(path_to_coef, key_coef)
+        hsi.set_coef(path_to_norm=path_to_coef, key=key_coef)
         print('Normalize HSI enabled')
     else:
         print('Normalize HSI disabled')
@@ -122,7 +122,8 @@ if __name__ == '__main__':
                  mode=int(conf['Servomotor']['MODE']),
                  direction=int(conf['Basler']['DIRECTION']),
                  path_to_save=conf['Paths']['PATH_TO_SAVE'],
-                 path_to_coef=conf['Paths']['PATH_TO_COEF'])
+                 path_to_coef=conf['Paths']['PATH_TO_COEF'],
+                 key_coef=conf['HSI']['KEY_NORM'])
 
 
 
