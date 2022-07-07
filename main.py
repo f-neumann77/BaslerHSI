@@ -123,7 +123,8 @@ if __name__ == '__main__':
                  direction=int(conf['Basler']['DIRECTION']),
                  path_to_save=conf['Paths']['PATH_TO_SAVE'],
                  path_to_coef=conf['Paths']['PATH_TO_COEF'],
-                 key_coef=conf['HSI']['KEY_NORM'])
+                 #key_coef=conf['HSI']['KEY_NORM']
+                )
 
 
 
