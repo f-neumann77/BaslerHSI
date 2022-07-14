@@ -50,6 +50,12 @@ class Servomotor:
         elif self.mode == 1:
             GPIO.output(self.pin_17_MS1, 1)
             GPIO.output(self.pin_18_MS2, 0)
+        elif self.mode == 2:
+            GPIO.output(self.pin_17_MS1, 0)
+            GPIO.output(self.pin_18_MS2, 1)
+        elif self.mode == 4:
+            GPIO.output(self.pin_17_MS1, 1)
+            GPIO.output(self.pin_18_MS2, 1)
         else:
             raise 'Error with servomotor mode'
 

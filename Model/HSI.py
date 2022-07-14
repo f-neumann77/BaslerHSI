@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 import tifffile as tiff
 from scipy.io import loadmat, savemat
@@ -22,7 +24,9 @@ class HSImage:
 
     def __init__(self,
                  hsi=None,
-                 coef=None):
+                 coef=None,
+                 conf=None
+                 ):
         """
         Parameters
         ----------
@@ -56,8 +60,7 @@ class HSImage:
         self.coef = coef
 
         # initializes constants for cropping hyperspectral area in raw images
-        conf = configparser.ConfigParser()
-        conf.read('../configuration.ini')
+        self.conf = conf
 
         self.number_of_channels = int(conf['HSI']['NUMBER_OF_CHANNELS'])
 
@@ -84,6 +87,7 @@ class HSImage:
         thresh : int
             Value to which whole spectrum will be normalized
         """
+
         coef = []
         for i in range(self.number_of_channels):
             coef.append([x / thresh for x in hs_layer[:, i]])
@@ -102,21 +106,22 @@ class HSImage:
         key : str
             key from .mat file
         """
+        temp = None
         if path_to_norm:
             print(f'Hyperspectral image will be normalized with {path_to_norm}')
             if path_to_norm.endswith('.mat') and key:
                 temp = loadmat(path_to_norm)[key]
-                self.coef = self._coef_norm(temp[:, 5, :])
                 print(f'Normalizing was successful with {path_to_norm}')
             elif path_to_norm.endswith('.tiff'):
                 temp = tiff.imread(path_to_norm)
-                self.coef = self._coef_norm(temp[:, 5, :])
                 print(f'Normalizing was successful with {path_to_norm}')
             elif path_to_norm.endswith('.npy'):
-                self.coef = self._coef_norm(np.load(path_to_norm)[:, 5, :])
+                temp = np.load(path_to_norm)
                 print(f'Normalizing was successful with {path_to_norm}')
             else:
                 raise "Error of loading coefficients"
+            if temp:
+                self.coef = self._coef_norm(temp[:, 5, :])
 
 
     def _crop_layer(self, layer: np.array) -> np.array:
