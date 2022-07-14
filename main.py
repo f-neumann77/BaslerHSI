@@ -116,12 +116,12 @@ def start_record(number_of_steps: int,
 def start_record_2(conf: dict):
     print('Start recording...')
 
-    number_of_steps = int(conf['Basler']['NUMBER_OF_STEPS']),
-    exposure = int(conf['Basler']['EXPOSURE']),
-    mode = int(conf['Servomotor']['MODE']),
-    direction = int(conf['Basler']['DIRECTION']),
-    path_to_save = conf['Paths']['PATH_TO_SAVE'],
-    path_to_coef = conf['Paths']['PATH_TO_COEF'],
+    number_of_steps = int(conf['Basler']['NUMBER_OF_STEPS'])
+    exposure = int(conf['Basler']['EXPOSURE'])
+    mode = int(conf['Servomotor']['MODE'])
+    direction = int(conf['Basler']['DIRECTION'])
+    path_to_save = conf['Paths']['PATH_TO_SAVE']
+    path_to_coef = conf['Paths']['PATH_TO_COEF']
     key_coef = conf['HSI']['KEY_NORM']
 
     try:
