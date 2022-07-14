@@ -119,7 +119,7 @@ class HSImage:
                 temp = np.load(path_to_norm)
                 print(f'Normalizing was successful with {path_to_norm}')
             else:
-                raise "Error of loading coefficients"
+                pass
             if temp:
                 self.coef = self._coef_norm(temp[:, 5, :])
 
