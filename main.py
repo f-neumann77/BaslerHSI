@@ -43,6 +43,7 @@ def save_hsi(hsi: HSImage,
     path_to_save: str
         path to saving HSI in format ends with .tiff, .mat, .npy
     """
+
     if path_to_save.endswith('.mat'):
         hsi.save_to_mat(path_to_file=path_to_save, key='image')
     elif path_to_save.endswith('.tiff'):
@@ -50,7 +51,7 @@ def save_hsi(hsi: HSImage,
     elif path_to_save.endswith('.npy'):
         hsi.save_to_npy(path_to_file=path_to_save)
     else:
-        raise "Saving error: please check file format"
+        print("Saving error: please check file format.\nHSI was not saved")
 
 def start_record(number_of_steps: int,
                  exposure: int,
