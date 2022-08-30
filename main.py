@@ -92,7 +92,7 @@ def start_record(conf: dict):
         camera = Basler()
         camera.set_camera_configures(exposure=exposure, gain_value=gain_value)
         print('Camera initializing successfully')
-    except:
+    except Exception:
         raise "Error camera initializing"
 
     hsi = HSImage(conf=conf)
@@ -106,7 +106,7 @@ def start_record(conf: dict):
         servomotor = Servomotor(direction, mode=mode)
         servomotor.initialize_pins()
         print('Servomotor connects successfully')
-    except:
+    except Exception:
         raise "Error with servomotor connections"
 
     for i in trange(number_of_steps):
@@ -115,8 +115,24 @@ def start_record(conf: dict):
     try:
         save_hsi(hsi, path_to_save=path_to_save)
         print(f'Hyperspectral image was saved in {path_to_save}')
-    except:
+    except Exception:
         raise "Error with  saving HSI"
+
+    path_to_log = path_to_save.split('.')[0] + '_log.txt'
+    log = f'{number_of_steps}\n' \
+          f'{exposure}\n' \
+          f'{gain_value}\n' \
+          f'{mode}\n' \
+          f'{direction}\n' \
+          f'{path_to_save}\n' \
+          f'{path_to_coef}\n' \
+          f'{key_coef}\n'
+    try:
+        with open(path_to_log) as f:
+            f.write(log)
+    except Exception:
+        raise "Error with creating log-file"
+
 
 if __name__ == '__main__':
 
