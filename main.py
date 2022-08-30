@@ -53,13 +53,7 @@ def save_hsi(hsi: HSImage,
     else:
         print("Saving error: please check file format.\nHSI was not saved")
 
-def start_record(number_of_steps: int,
-                 exposure: int,
-                 mode: int,
-                 direction: int,
-                 path_to_save: str,
-                 path_to_coef=None,
-                 key_coef=None):
+def start_record(conf: dict):
     """
     Starts recording of hyperspectral image
 
@@ -82,43 +76,12 @@ def start_record(number_of_steps: int,
     key_coef: str
         key for mat file of matrix of normalized coefficients
     """
-    print('Start recording...')
 
-    try:
-        camera = Basler()
-        camera.set_camera_configures(exposure=exposure)
-        print('Camera initializing successfully')
-    except:
-        raise "Error camera initializing"
-
-    hsi = HSImage()
-    if path_to_coef:
-        hsi.set_coef(path_to_norm=path_to_coef, key=key_coef)
-        print('Normalize HSI enabled')
-    else:
-        print('Normalize HSI disabled')
-
-    try:
-        servomotor = Servomotor(direction, mode=mode)
-        servomotor.initialize_pins()
-        print('Servomotor connects successfully')
-    except:
-        raise "Error with servomotor connections"
-
-    for i in trange(number_of_steps):
-       do_step(camera, hsi, servomotor, ind=i, num=number_of_steps)
-
-    try:
-        save_hsi(hsi, path_to_save=path_to_save)
-        print(f'Hyperspectral image was saved in {path_to_save}')
-    except:
-        raise "Error with  saving HSI"
-
-def start_record_2(conf: dict):
     print('Start recording...')
 
     number_of_steps = int(conf['Basler']['NUMBER_OF_STEPS'])
     exposure = int(conf['Basler']['EXPOSURE'])
+    gain_value = int(conf['Basler']['GAIN'])
     mode = int(conf['Servomotor']['MODE'])
     direction = int(conf['Basler']['DIRECTION'])
     path_to_save = conf['Paths']['PATH_TO_SAVE']
@@ -127,7 +90,7 @@ def start_record_2(conf: dict):
 
     try:
         camera = Basler()
-        camera.set_camera_configures(exposure=exposure)
+        camera.set_camera_configures(exposure=exposure, gain_value=gain_value)
         print('Camera initializing successfully')
     except:
         raise "Error camera initializing"
@@ -159,17 +122,7 @@ if __name__ == '__main__':
 
     conf = configparser.ConfigParser()
     conf.read("configuration.ini")
-    """
-    start_record(number_of_steps=int(conf['Basler']['NUMBER_OF_STEPS']),
-                 exposure=int(conf['Basler']['EXPOSURE']),
-                 mode=int(conf['Servomotor']['MODE']),
-                 direction=int(conf['Basler']['DIRECTION']),
-                 path_to_save=conf['Paths']['PATH_TO_SAVE'],
-                 path_to_coef=conf['Paths']['PATH_TO_COEF'],
-                 #key_coef=conf['HSI']['KEY_NORM']
-                )
-    """
-    start_record_2(conf)
+    start_record(conf)
 
 
 

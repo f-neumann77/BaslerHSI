@@ -1,10 +1,6 @@
-import os.path
-
 import numpy as np
 import tifffile as tiff
 from scipy.io import loadmat, savemat
-import configparser
-
 
 class HSImage:
     """

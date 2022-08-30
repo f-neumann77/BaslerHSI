@@ -16,7 +16,7 @@ class Basler:
         self.camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateFirstDevice())
         self.camera.Open()
 
-    def set_camera_configures(self, exposure: int):
+    def set_camera_configures(self, exposure: int, gain_value: int = 0):
         """
         sets camera configures
 
@@ -24,17 +24,21 @@ class Basler:
         ----------
         exposure : int
             time of exposure in milliseconds
+        gain_value : int
+            gain coefficient for shot
         """
         self.camera.ExposureTime.SetValue(exposure)
+        self.camera.GainAuto.SetValue('Off')
+        self.camera.Gain.SetValue(gain_value)
 
     def make_shot(self) -> np.array:
         """
         Makes shot from camera and return it as array
         """
         self.camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
-        grabResult = self.camera.RetrieveResult(5000, pylon.TimeoutHandling_ThrowException)
+        grabResult = self.camera.RetrieveResult(9000, pylon.TimeoutHandling_ThrowException)
         while not grabResult.GrabSucceeded():
-            grabResult = self.camera.RetrieveResult(5000, pylon.TimeoutHandling_ThrowException)
+            grabResult = self.camera.RetrieveResult(9000, pylon.TimeoutHandling_ThrowException)
         self.camera.Close()
         return grabResult.Array
 
