@@ -1,7 +1,7 @@
 from Model.Camera import Basler
 from Model.HSI import HSImage
 from Model.Servomotor import Servomotor
-from tqdm import tqdm, trange
+from tqdm import trange
 import configparser
 
 def do_step(camera: Basler,
