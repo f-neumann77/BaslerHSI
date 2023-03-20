@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
+
 class Servomotor:
     """
     Class to work with servomotor by RPi.GPIO
@@ -29,11 +30,7 @@ class Servomotor:
         self.pin_17_MS1 = 17  # №6
         self.pin_18_MS2 = 18  # mode
 
-
     def initialize_pins(self):
-        """
-        Initilizes Raspberry pins
-        """
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin_3_YEL, GPIO.OUT, initial=1)  # step
@@ -63,10 +60,9 @@ class Servomotor:
         GPIO.output(self.pin_14_BLUE, 0)
 
     def next_step(self):
-        """
-        Does one step of servomotor
-        """
+
         GPIO.output(self.pin_3_YEL, 1)
         time.sleep(0.1)
         GPIO.output(self.pin_3_YEL, 0)
         time.sleep(0.1)
+
